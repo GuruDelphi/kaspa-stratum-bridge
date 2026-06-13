@@ -9,10 +9,15 @@ import (
 	"github.com/onemorebsmith/kaspastratum/src/gostratum"
 )
 
-const maxjobs = 32
+const maxjobs = 512
+
+type MiningJob struct {
+	Id    uint64
+	Block *appmessage.RPCBlock
+}
 
 type MiningState struct {
-	Jobs        map[uint64]*appmessage.RPCBlock
+	Jobs        map[uint64]*MiningJob
 	JobLock     sync.Mutex
 	jobCounter  uint64
 	bigDiff     big.Int
@@ -20,12 +25,12 @@ type MiningState struct {
 	useBigJob   bool
 	connectTime time.Time
 	stratumDiff *kaspaDiff
-	maxJobs     uint8
+	maxJobs     uint64
 }
 
 func MiningStateGenerator() any {
 	return &MiningState{
-		Jobs:        make(map[uint64]*appmessage.RPCBlock, maxjobs),
+		Jobs:        make(map[uint64]*MiningJob, maxjobs),
 		JobLock:     sync.Mutex{},
 		connectTime: time.Now(),
 		maxJobs:     maxjobs,
@@ -40,7 +45,10 @@ func (ms *MiningState) AddJob(job *appmessage.RPCBlock) uint64 {
 	ms.JobLock.Lock()
 	ms.jobCounter++
 	idx := ms.jobCounter
-	ms.Jobs[idx%maxjobs] = job
+	ms.Jobs[idx%maxjobs] = &MiningJob{
+		Id:    idx,
+		Block: job,
+	}
 	ms.JobLock.Unlock()
 	return idx
 }
@@ -49,5 +57,8 @@ func (ms *MiningState) GetJob(id uint64) (*appmessage.RPCBlock, bool) {
 	ms.JobLock.Lock()
 	job, exists := ms.Jobs[id%maxjobs]
 	ms.JobLock.Unlock()
-	return job, exists
+	if !exists || job.Id != id {
+		return nil, false
+	}
+	return job.Block, true
 }

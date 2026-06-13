@@ -188,6 +188,7 @@ func (sh *shareHandler) HandleSubmit(ctx *gostratum.StratumContext, event gostra
 	jobId := submitInfo.jobId
 	block := submitInfo.block
 	var invalidShare bool
+	searchedJobs := uint64(0)
 	for {
 		converted, err := appmessage.RPCBlockToDomainBlock(block)
 		if err != nil {
@@ -215,12 +216,13 @@ func (sh *shareHandler) HandleSubmit(ctx *gostratum.StratumContext, event gostra
 
 			// stupid hack for busted ass IceRiver/Bitmain ASICs.  Need to loop
 			// through job history because they submit jobs with incorrect IDs
-			if jobId == 1 || jobId%maxJobs == submitInfo.jobId%maxJobs+1 {
+			if jobId == 1 || searchedJobs >= maxJobs-1 {
 				// exhausted all previous blocks
 				break
 			} else {
 				var exists bool
 				jobId--
+				searchedJobs++
 				block, exists = state.GetJob(jobId)
 				if !exists {
 					// just exit loop - bad share will be recorded
