@@ -19,7 +19,7 @@ Huge shoutout to https://github.com/KaffinPX/KStratum for the inspiration
 Tips appreciated: 
 - [@onemorebsmith](https://github.com/onemorebsmith): `kaspa:qp9v6090sr8jjlkq7r3f4h9un5rtfhu3raknfg3cca9eapzee57jzew0kxwlp`
 - [@rdugan](https://github.com/rdugan): `kaspa:qrkhyhej7h0gmmvsuf8mmufget4n4xnlwx5j360sz70q7xvu0hlaxfmt9p8j8`
-
+- [@gurudelphi](https://github.com/gurudelphi): `kaspa:qqpy2x88kgrztmc0zdq8hqlvkhwp02fyhm9e8kadmacttuuqd73rkvell35tc`
 
 # Features:
 
