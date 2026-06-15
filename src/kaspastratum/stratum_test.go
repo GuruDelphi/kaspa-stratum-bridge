@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/big"
 	"net"
+	"os"
 	"testing"
 	"time"
 
@@ -77,6 +78,10 @@ func TestPoolHzCalculation(t *testing.T) {
 
 // snooper. Inspect coms between miner and pool
 func TestBridge(t *testing.T) {
+	if os.Getenv("KASPA_STRATUM_RUN_BRIDGE_TEST") != "1" {
+		t.Skip("skipping manual bridge snooper test")
+	}
+
 	serverConn, err := net.Dial("tcp", "pool.us.woolypooly.com:3112")
 	if err != nil {
 		t.Fatal(err)

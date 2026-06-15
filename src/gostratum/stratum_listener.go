@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"strings"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -87,11 +86,12 @@ func (s *StratumListener) Listen(ctx context.Context) error {
 }
 
 func (s *StratumListener) newClient(ctx context.Context, connection net.Conn) {
-	addr := connection.RemoteAddr().String()
-	port := connection.RemoteAddr().(*net.TCPAddr).Port
-	parts := strings.Split(addr, ":")
-	if len(parts) > 0 {
-		addr = parts[0] // trim off the port
+	remoteAddr := connection.RemoteAddr()
+	addr := remoteAddr.String()
+	port := 0
+	if tcpAddr, ok := remoteAddr.(*net.TCPAddr); ok {
+		addr = tcpAddr.IP.String()
+		port = tcpAddr.Port
 	}
 	clientContext := &StratumContext{
 		parentContext: ctx,
